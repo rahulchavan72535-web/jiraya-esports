@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiraya Esports - Tournament Arena</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0d0f17;
+            color: #ffffff;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #ff4655;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            color: #ff4655;
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .card {
+            background: #1a1d29;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2d3248;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .card h2 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            color: #00e5ff;
+            border-bottom: 1px solid #2d3248;
+            padding-bottom: 8px;
+        }
+        .admin-card {
+            border: 1px solid #ffd700;
+        }
+        .admin-card h2 {
+            color: #ffd700;
+            border-bottom-color: #ffd700;
+        }
+        .room-card {
+            border: 1px solid #00e5ff;
+            background: #121724;
+        }
+        .tournament-item {
+            background: #232738;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tournament-title {
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .tournament-fee {
+            color: #ffb703;
+            font-size: 0.9rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #2d3248;
+            font-size: 0.95rem;
+        }
+        th {
+            color: #8f9ca7;
+        }
+        .rank-1 {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .btn-action {
+            background: #ff4655;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-action:hover {
+            background: #e03746;
+        }
+        .btn-cyan {
+            background: #00e5ff;
+            color: #0d0f17;
+        }
+        .btn-cyan:hover {
+            background: #00b4cc;
+        }
+        .btn-gold {
+            background: #ffd700;
+            color: #0d0f17;
+        }
+        .btn-gold:hover {
+            background: #e6c200;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #8f9ca7;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #2d3248;
+            background: #232738;
+            color: white;
+            font-size: 0.95rem;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #00e5ff;
+        }
+        .status-msg {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .room-display-box {
+            margin-top: 15px;
+            background: #1a1d29;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px dashed #00e5ff;
+            display: flex;
+            gap: 30px;
+        }
+        .room-display-item strong {
+            display: block;
+            color: #8f9ca7;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .room-display-item span {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd700;
+            letter-spacing: 1px;
+        }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .slot-box {
+            padding: 12px 6px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #2d3248;
+        }
+        .slot-available {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            border-color: #00e5ff;
+        }
+        .slot-available:hover {
+            background: #00e5ff;
+            color: #0d0f17;
+        }
+        .slot-booked {
+            background: rgba(255, 70, 85, 0.2);
+            color: #ff4655;
+            border-color: #ff4655;
+            cursor: not-allowed;
+        }
+        .slot-booked span {
+            display: block;
+            font-size: 0.7rem;
+            color: #ffd700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .active-selector-bar {
+            background: #121724;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #00e5ff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .active-selector-bar label {
+            font-weight: bold;
+            color: #00e5ff;
+            white-space: nowrap;
+        }
+        .active-selector-bar select {
+            width: 100%;
+            padding: 10px;
+            background: #1a1d29;
+            color: #ffd700;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 1px solid #2d3248;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ Jiraya Esports Arena ⚡</h1>
+        <p>Live Free Fire Match & Leaderboard Hub</p>
+    </header>
+
+    <div class="container">
+        <!-- GLOBAL TOURNAMENT SWITCHER -->
+        <div class="full-width active-selector-bar">
+            <label for="active-tournament-select">👉 Select Active Tournament:</label>
+            <select id="active-tournament-select" onchange="onTournamentChange()">
+                <option value="2">#2 - JIRAYA CS TOURNAMENT</option>
+                <option value="1">#1 - Jiraya Free Fire Cup #1</option>
+            </select>
+        </div>
+
+        <!-- Section 1: Active Tournaments -->
+        <div class="card">
+            <h2>🏆 Active Tournaments</h2>
+            <div id="tournaments-list">
+                <p>Loading tournaments...</p>
+            </div>
+            <button class="btn-action" style="margin-top: 10px;" onclick="fetchTournaments()">Refresh Matches</button>
+        </div>
+
+        <!-- Section 2: Live Leaderboard -->
+        <div class="card">
+            <h2 id="leaderboard-title">🥇 Match Leaderboard</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Kills</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="4">Loading leaderboard...</td></tr>
+                </tbody>
+            </table>
+            <button class="btn-action" style="margin-top: 10px;" onclick="fetchLeaderboard()">Refresh Standings</button>
+        </div>
+
+        <!-- Section 3: Admin Create Tournament -->
+        <div class="card full-width admin-card">
+            <h2>👑 Admin: Create New Tournament</h2>
+            <form id="create-tour-form" onsubmit="handleCreateTournament(event)">
+                <div class="form-grid">
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label>Tournament Title / Name</label>
+                        <input type="text" id="create-title" placeholder="e.g. Jiraya Solo Survival #3" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Entry Fee (₹)</label>
+                        <select id="create-fee" required>
+                            <option value="0">₹0 (Free Entry)</option>
+                            <option value="10">₹10</option>
+                            <option value="20" selected>₹20</option>
+                            <option value="50">₹50</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action btn-gold" style="width: 100%;">Create Match</button>
+                    </div>
+                </div>
+            </form>
+            <div id="create-tour-status" class="status-msg"></div>
+        </div>
+
+        <!-- Section 4: Register New Player Form -->
+        <div class="card full-width">
+            <h2>📝 Step 1: Register Player Profile</h2>
+            <form id="register-form" onsubmit="handleRegisterPlayer(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Name / Username</label>
+                        <input type="text" id="reg-username" placeholder="e.g. Rahul" required>
+                    </div>
+                    <div class="input-group">
+                        <label>In-Game Name (IGN)</label>
+                        <input type="text" id="reg-ign" placeholder="e.g. JirayaBoss" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Free Fire UID</label>
+                        <input type="text" id="reg-uid" placeholder="e.g. 2176293488" required>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action btn-cyan" style="width: 100%;">Create Player</button>
+                    </div>
+                </div>
+            </form>
+            <div id="reg-status" class="status-msg"></div>
+        </div>
+
+        <!-- Section 5: Live Slot Matrix (1 - 48) -->
+        <div class="card full-width">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="slot-arena-title">🎯 Live Slot Arena</h2>
+                <button class="btn-action" style="padding: 6px 12px; font-size: 0.85rem;" onclick="fetchSlots()">Refresh Slots</button>
+            </div>
+            <p style="color: #8f9ca7; font-size: 0.85rem; margin-top: 5px;">Click on any open slot to auto-fill slot number below!</p>
+            <div class="slots-grid" id="slots-grid"></div>
+        </div>
+
+        <!-- Section 6: Join Tournament Form -->
+        <div class="card full-width">
+            <h2>🎮 Step 2: Join Tournament (Book Slot)</h2>
+            <form id="join-form" onsubmit="handleJoinTournament(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Selected Tournament ID</label>
+                        <input type="number" id="join-tid" value="2" readonly style="background:#151821; color:#00e5ff; font-weight:bold;">
+                    </div>
+                    <div class="input-group">
+                        <label>Free Fire UID</label>
+                        <input type="text" id="join-uid" placeholder="e.g. 2176293488" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Slot Number (1 - 48)</label>
+                        <input type="number" id="join-slot" min="1" max="48" placeholder="Click any slot from grid" required>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action" style="width: 100%;">Book Slot</button>
+                    </div>
+                </div>
+            </form>
+            <div id="join-status" class="status-msg"></div>
+        </div>
+
+        <!-- Section 7: Player Private Room Details -->
+        <div class="card full-width room-card">
+            <h2>🔑 Player Room Access (Locked for Non-Registered)</h2>
+            <form id="view-room-form" onsubmit="handleViewRoom(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Tournament ID</label>
+                        <input type="number" id="room-fetch-tid" value="2" readonly style="background:#151821; color:#00e5ff; font-weight:bold;">
+                    </div>
+                    <div class="input-group">
+                        <label>Your Free Fire UID</label>
+                        <input type="text" id="room-fetch-uid" placeholder="e.g. 2176293488" required>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action btn-cyan" style="width: 100%;">View Room ID & Password</button>
+                    </div>
+                </div>
+            </form>
+            <div id="room-fetch-status" class="status-msg"></div>
+            <div id="room-credentials-box" style="display: none;" class="room-display-box">
+                <div class="room-display-item">
+                    <strong>Your Assigned Slot</strong>
+                    <span id="disp-slot" style="color: #00e5ff;">-</span>
+                </div>
+                <div class="room-display-item">
+                    <strong>Custom Room ID</strong>
+                    <span id="disp-room-id">-</span>
+                </div>
+                <div class="room-display-item">
+                    <strong>Room Password</strong>
+                    <span id="disp-room-pass">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8: Admin Room Management -->
+        <div class="card full-width admin-card">
+            <h2>👑 Admin: Set Custom Room Details</h2>
+            <form id="set-room-form" onsubmit="handleSetRoom(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Tournament ID</label>
+                        <input type="number" id="set-room-tid" value="2" readonly style="background:#151821; color:#ffd700; font-weight:bold;">
+                    </div>
+                    <div class="input-group">
+                        <label>Custom Room ID</label>
+                        <input type="text" id="set-room-id" placeholder="e.g. 9845123" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Custom Room Password</label>
+                        <input type="text" id="set-room-pass" placeholder="e.g. jiraya12" required>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action btn-gold" style="width: 100%;">Publish Room</button>
+                    </div>
+                </div>
+            </form>
+            <div id="set-room-status" class="status-msg"></div>
+        </div>
+
+        <!-- Section 9: Admin Match Result Panel -->
+        <div class="card full-width admin-card">
+            <h2>👑 Admin: Submit Match Result</h2>
+            <form id="result-form" onsubmit="handleSubmitResult(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Tournament ID</label>
+                        <input type="number" id="res-tid" value="2" readonly style="background:#151821; color:#ffd700; font-weight:bold;">
+                    </div>
+                    <div class="input-group">
+                        <label>Player FF UID</label>
+                        <input type="text" id="res-uid" placeholder="e.g. 2176293488" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Placement / Rank (1 - 48)</label>
+                        <input type="number" id="res-rank" min="1" max="48" placeholder="e.g. 2" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Total Kills</label>
+                        <input type="number" id="res-kills" min="0" placeholder="e.g. 6" required>
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-action btn-gold" style="width: 100%;">Save Result</button>
+                    </div>
+                </div>
+            </form>
+            <div id="res-status" class="status-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        function getSelectedTournamentId() {
+            return Number(document.getElementById('active-tournament-select').value) || 1;
+        }
+
+        function onTournamentChange() {
+            const currentTid = getSelectedTournamentId();
+            
+            // Sync all forms to this tournament ID
+            document.getElementById('join-tid').value = currentTid;
+            document.getElementById('room-fetch-tid').value = currentTid;
+            document.getElementById('set-room-tid').value = currentTid;
+            document.getElementById('res-tid').value = currentTid;
+
+            document.getElementById('slot-arena-title').innerText = `🎯 Live Slot Arena (Match #${currentTid})`;
+            document.getElementById('leaderboard-title').innerText = `🥇 Match #${currentTid} Leaderboard`;
+
+            fetchSlots();
+            fetchLeaderboard();
+        }
+
+        async function fetchTournaments() {
+            try {
+                const res = await fetch(`${API_BASE}/tournaments`);
+                const data = await res.json();
+                const container = document.getElementById('tournaments-list');
+                const selector = document.getElementById('active-tournament-select');
+                
+                container.innerHTML = '';
+                const currentVal = selector.value;
+                selector.innerHTML = '';
+
+                if (!data.tournaments || data.tournaments.length === 0) {
+                    container.innerHTML = '<p>No tournaments live right now.</p>';
+                    return;
+                }
+
+                data.tournaments.forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = 'tournament-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="tournament-title">#${t.id} - ${t.title}</div>
+                            <small style="color: #00e5ff;">Game: ${t.game || 'Free Fire'}</small>
+                        </div>
+                        <div class="tournament-fee">Fee: ₹${t.entry_fee}</div>
+                    `;
+                    container.appendChild(item);
+
+                    // Add to dropdown
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.innerText = `#${t.id} - ${t.title}`;
+                    selector.appendChild(opt);
+                });
+
+                if (currentVal && data.tournaments.some(t => t.id == currentVal)) {
+                    selector.value = currentVal;
+                }
+                onTournamentChange();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tournaments-list').innerHTML = '<p style="color:#ff4655;">Error loading tournaments!</p>';
+            }
+        }
+
+        async function fetchLeaderboard() {
+            const tid = getSelectedTournamentId();
+            try {
+                const res = await fetch(`${API_BASE}/leaderboard/${tid}`);
+                const data = await res.json();
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+
+                if (!data.leaderboard || data.leaderboard.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No results submitted for this match.</td></tr>';
+                    return;
+                }
+
+                data.leaderboard.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="${row.rank === 1 ? 'rank-1' : ''}">#${row.rank}</td>
+                        <td>${row.in_game_name || row.player_uid}</td>
+                        <td>${row.kills}</td>
+                        <td><strong>${row.total_points}</strong></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" style="color:#ff4655;">Error loading leaderboard!</td></tr>';
+            }
+        }
+
+        async function fetchSlots() {
+            const tid = getSelectedTournamentId();
+            const grid = document.getElementById('slots-grid');
+            if (!grid) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/tournament-slots/${tid}`);
+                const data = await res.json();
+                const bookedMap = {};
+                
+                if (data && data.booked_slots) {
+                    data.booked_slots.forEach(b => {
+                        bookedMap[b.slot_number] = b.in_game_name || b.player_uid;
+                    });
+                }
+
+                grid.innerHTML = '';
+                for (let i = 1; i <= 48; i++) {
+                    const box = document.createElement('div');
+                    if (bookedMap[i]) {
+                        box.className = 'slot-box slot-booked';
+                        box.innerHTML = `Slot ${i}<span>${bookedMap[i]}</span>`;
+                    } else {
+                        box.className = 'slot-box slot-available';
+                        box.innerText = `Slot ${i}`;
+                        box.onclick = () => {
+                            document.getElementById('join-slot').value = i;
+                        };
+                    }
+                    grid.appendChild(box);
+                }
+            } catch (err) {
+                console.error('Slots error:', err);
+                grid.innerHTML = '<p style="color:#ff4655;">Slots load nahi ho paye!</p>';
+            }
+        }
+
+        async function handleCreateTournament(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('create-tour-status');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Creating tournament...';
+
+            const payload = {
+                title: document.getElementById('create-title').value.trim(),
+                entry_fee: Number(document.getElementById('create-fee').value)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/create-tournament`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 201) {
+                    statusDiv.style.color = '#ffd700';
+                    statusDiv.innerText = `Success: Tournament #${result.tournament.id} created!`;
+                    document.getElementById('create-title').value = '';
+                    fetchTournaments();
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        async function handleRegisterPlayer(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('reg-status');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Registering player...';
+
+            const payload = {
+                username: document.getElementById('reg-username').value.trim(),
+                in_game_name: document.getElementById('reg-ign').value.trim(),
+                free_fire_uid: document.getElementById('reg-uid').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/register-player`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 201) {
+                    statusDiv.style.color = '#00e5ff';
+                    statusDiv.innerText = `Success: Player "${result.player.in_game_name}" register ho gaya!`;
+                    document.getElementById('join-uid').value = payload.free_fire_uid;
+                    document.getElementById('res-uid').value = payload.free_fire_uid;
+                    document.getElementById('room-fetch-uid').value = payload.free_fire_uid;
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        async function handleJoinTournament(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('join-status');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Booking slot...';
+
+            const payload = {
+                tournament_id: Number(document.getElementById('join-tid').value),
+                player_uid: document.getElementById('join-uid').value.trim(),
+                slot_number: Number(document.getElementById('join-slot').value)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/join-tournament`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 201) {
+                    statusDiv.style.color = '#00e5ff';
+                    statusDiv.innerText = `Success: Match #${payload.tournament_id} mein Slot ${result.registration.slot_number} booked!`;
+                    fetchSlots();
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        async function handleSetRoom(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('set-room-status');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Saving room details...';
+
+            const payload = {
+                tournament_id: Number(document.getElementById('set-room-tid').value),
+                room_id: document.getElementById('set-room-id').value.trim(),
+                room_password: document.getElementById('set-room-pass').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/set-room-details`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 200) {
+                    statusDiv.style.color = '#ffd700';
+                    statusDiv.innerText = 'Room ID & Password live published!';
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        async function handleViewRoom(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('room-fetch-status');
+            const credBox = document.getElementById('room-credentials-box');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Verifying registration...';
+            credBox.style.display = 'none';
+
+            const payload = {
+                tournament_id: Number(document.getElementById('room-fetch-tid').value),
+                player_uid: document.getElementById('room-fetch-uid').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/get-room-details`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 200) {
+                    if (result.ready) {
+                        statusDiv.style.color = '#00e5ff';
+                        statusDiv.innerText = 'Room details verified!';
+                        document.getElementById('disp-slot').innerText = `Slot #${result.slot_number}`;
+                        document.getElementById('disp-room-id').innerText = result.room_id;
+                        document.getElementById('disp-room-pass').innerText = result.room_password;
+                        credBox.style.display = 'flex';
+                    } else {
+                        statusDiv.style.color = '#ffb703';
+                        statusDiv.innerText = result.message;
+                    }
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        async function handleSubmitResult(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('res-status');
+            statusDiv.style.color = '#8f9ca7';
+            statusDiv.innerText = 'Submitting result...';
+
+            const payload = {
+                tournament_id: Number(document.getElementById('res-tid').value),
+                player_uid: document.getElementById('res-uid').value.trim(),
+                rank: Number(document.getElementById('res-rank').value),
+                kills: Number(document.getElementById('res-kills').value)
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/submit-result`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (res.status === 201) {
+                    statusDiv.style.color = '#ffd700';
+                    statusDiv.innerText = `Success: Points calculated (${result.data.total_points} pts). Leaderboard updated!`;
+                    fetchLeaderboard();
+                } else {
+                    statusDiv.style.color = '#ff4655';
+                    statusDiv.innerText = `Error: ${result.error}`;
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#ff4655';
+                statusDiv.innerText = 'Server connect nahi ho saka!';
+            }
+        }
+
+        fetchTournaments();
+    </script>
+</body>
+</html>
