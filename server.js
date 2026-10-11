@@ -28,8 +28,11 @@ app.get('/test-db', async (req, res) => {
     const result = await pool.query('SELECT NOW()');
     res.json({ message: 'Database Connected Successfully!', time: result.rows[0].now });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database connection failed!' });
+    res.status(500).json({ 
+      error: 'Database connection failed!', 
+      message: err.message, 
+      code: err.code 
+    });
   }
 });
 
