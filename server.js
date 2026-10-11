@@ -293,9 +293,11 @@ app.post('/api/get-room-details', async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
-    console.log("Server 5000 port par chalu ho gaya hai!");
-});
 app.get('/', (req, res) => {
   res.send('Jiraya Esports Backend is Running Live!');
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server ${PORT} port par chalu ho gaya hai!`);
 });
