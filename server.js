@@ -242,7 +242,6 @@ app.post('/api/submit-result', async (req, res) => {
     res.status(500).json({ error: 'Server error! Result save nahi ho saka.' });
   }
 });
-});
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
