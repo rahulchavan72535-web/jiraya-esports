@@ -8,7 +8,7 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-
+app.use(express.static('public'));
 // Database connection (Supabase via DATABASE_URL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
