@@ -5,13 +5,12 @@ const { Pool } = require('pg');
 
 const path = require('path');
 
+const app = express();
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 // Database connection (Supabase via DATABASE_URL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -198,7 +197,9 @@ app.get('/api/room-details/:tournament_id', async (req, res) => {
     res.status(500).json({ error: 'Server error! Room details load nahi ho payi.' });
   }
 });
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // Port & Server Listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
