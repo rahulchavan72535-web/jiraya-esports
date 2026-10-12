@@ -197,6 +197,33 @@ app.get('/api/room-details/:tournament_id', async (req, res) => {
     res.status(500).json({ error: 'Server error! Room details load nahi ho payi.' });
   }
 });
+// 8. Match Result Submit Karne Wali API
+app.post('/api/submit-result', async (req, res) => {
+  const { tournament_id, player_uid, rank, kills } = req.body;
+
+  if (!tournament_id || !player_uid || rank === undefined || kills === undefined) {
+    return res.status(400).json({ error: 'Tournament ID, Player UID, Rank aur Kills sabhi zaroori hain!' });
+  }
+
+  try {
+    const query = `
+      INSERT INTO match_results (tournament_id, player_uid, rank, kills)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (tournament_id, player_uid) 
+      DO UPDATE SET rank = EXCLUDED.rank, kills = EXCLUDED.kills
+      RETURNING *;
+    `;
+    const result = await pool.query(query, [tournament_id, player_uid, rank, kills]);
+
+    res.status(200).json({
+      message: 'Result successfully save ho gaya!',
+      data: result.rows[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error! Result save nahi ho saka.' });
+  }
+});
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
