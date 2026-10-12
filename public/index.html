@@ -464,7 +464,7 @@
     </div>
 
     <script>
-        const API_BASE = '/api';
+        const API_BASE = 'http://localhost:5000/api';
 
         function getSelectedTournamentId() {
             return Number(document.getElementById('active-tournament-select').value) || 1;
@@ -691,8 +691,7 @@
 
                 if (res.status === 201) {
                     statusDiv.style.color = '#00e5ff';
-                    statusDiv.innerText = `Success: Match #${payload.tournament_id} mein Slot ${result.registration.slot_number} booked!`;
-                    fetchSlots();
+                    statusDiv.innerText = `Success: Match #${payload.tournament_id} mein Slot ${result.data.slot_number} booked!`;
                 } else {
                     statusDiv.style.color = '#ff4655';
                     statusDiv.innerText = `Error: ${result.error}`;
