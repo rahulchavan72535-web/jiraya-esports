@@ -3,12 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 
-const app = express();
+const path = require('path');
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // Database connection (Supabase via DATABASE_URL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
