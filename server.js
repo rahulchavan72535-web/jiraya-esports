@@ -206,14 +206,32 @@ app.post('/api/submit-result', async (req, res) => {
   }
 
   try {
-    const query = `
-      INSERT INTO match_results (tournament_id, player_uid, rank, kills)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (tournament_id, player_uid) 
-      DO UPDATE SET rank = EXCLUDED.rank, kills = EXCLUDED.kills
-      RETURNING *;
+    // Pehle check karo ki kya result pehle se exist karta hai
+    const checkQuery = `
+      SELECT id FROM match_results 
+      WHERE tournament_id = $1 AND player_uid = $2
     `;
-    const result = await pool.query(query, [tournament_id, player_uid, rank, kills]);
+    const existing = await pool.query(checkQuery, [tournament_id, player_uid]);
+
+    let result;
+    if (existing.rows.length > 0) {
+      // Exist karta hai toh Update karo
+      const updateQuery = `
+        UPDATE match_results 
+        SET rank = $3, kills = $4 
+        WHERE tournament_id = $1 AND player_uid = $2 
+        RETURNING *;
+      `;
+      result = await pool.query(updateQuery, [tournament_id, player_uid, rank, kills]);
+    } else {
+      // Naya record insert karo
+      const insertQuery = `
+        INSERT INTO match_results (tournament_id, player_uid, rank, kills) 
+        VALUES ($1, $2, $3, $4) 
+        RETURNING *;
+      `;
+      result = await pool.query(insertQuery, [tournament_id, player_uid, rank, kills]);
+    }
 
     res.status(200).json({
       message: 'Result successfully save ho gaya!',
@@ -223,6 +241,7 @@ app.post('/api/submit-result', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Server error! Result save nahi ho saka.' });
   }
+});
 });
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
