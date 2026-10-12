@@ -795,27 +795,22 @@
             };
 
             try {
-                const res = await fetch(`${API_BASE}/submit-result`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
+              const res = await fetch(`${API_BASE}/submit-result`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-                if (res.status === 201) {
-                    statusDiv.style.color = '#ffd700';
-                    statusDiv.innerText = `Success: Points calculated (${result.data.total_points} pts). Leaderboard updated!`;
-                    fetchLeaderboard();
-                } else {
-                    statusDiv.style.color = '#ff4655';
-                    statusDiv.innerText = `Error: ${result.error}`;
-                }
-            } catch (err) {
-                console.error(err);
-                statusDiv.style.color = '#ff4655';
-                statusDiv.innerText = 'Server connect nahi ho saka!';
-            }
-        }
+    const result = await res.json();
+
+    if (res.ok) {
+      statusDiv.style.color = '#00ffcc';
+      statusDiv.innerText = `Success: ${result.message || 'Result save ho gaya!'}`;
+      fetchLeaderboard(); // Leaderboard refresh kar dega
+    } else {
+      statusDiv.style.color = '#ff4655';
+      statusDiv.innerText = `Error: ${result.error || 'Result save nahi ho saka'}`;
+    }
 
         fetchTournaments();
     </script>
