@@ -17,10 +17,6 @@ const pool = new Pool({
   }
 });
 
-// Root Route (Testing backend health)
-app.get('/', (req, res) => {
-  res.send('Jiraya Esports Backend is Running Live!');
-});
 
 // 1. Connection check route
 app.get('/test-db', async (req, res) => {
